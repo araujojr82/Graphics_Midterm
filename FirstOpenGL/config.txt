@@ -1,0 +1,8 @@
+Game Config
+width 1980 
+height 1080
+Title_Start
+Welcome to OpenGL, people! 
+Title_End
+1280
+768
