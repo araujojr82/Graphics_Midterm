@@ -1,9 +1,8 @@
-bacteria1  bacillus_electronscope_xyz.ply
-bacteria2  Flagellate_bacteria_xyz.ply
-bloodcell  erythro_for_obj_xyz.ply
-virus      virus_super_low_res_xyz.ply
-asteroid1  asteroid_xyz.ply
-asteroid2  asteroid2_xyz.ply
-asteroid3  asteroid3_xyz.ply
-asteroid4  asteroid4_xyz.ply
-sphere     Sphereply_xyz.ply
+sphere     ../models/Sphereply_xyz_n.ply
+battlestar ../models/Battlestar_Galactica_ASCII_Res_6_26674_faces.ply
+viper      ../models/Viper_MkVII_ASCII_UVTex.ply
+raider     ../models/Raider_ASCII_UVtex.ply
+asteroid1  ../models/asteroid_xyz.ply
+asteroid2  ../models/asteroid2_xyz.ply
+asteroid3  ../models/asteroid3_xyz.ply
+asteroid4  ../models/asteroid4_xyz.ply

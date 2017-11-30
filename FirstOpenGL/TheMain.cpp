@@ -34,6 +34,12 @@
 int g_GameObjNumber = 0;				// game object vector position number 
 int g_LightObjNumber = 0;				// light object vector position
 
+int g_targetShip = 0;
+int g_selectedShip = 0;
+
+bool g_lookAtON = false;
+bool g_moveRiders = false;
+bool g_movingViper = false;
 
 glm::vec3 CAMERASPEED = glm::vec3( 0.0f, 0.0f, 0.0f );
 int g_NUMBER_OF_LIGHTS = 9;
@@ -43,8 +49,7 @@ bool bIsWireframe = false;
 // Remember to #include <vector>...
 std::vector< cGameObject* > g_vecGameObjects;
 
-
-glm::vec3 g_cameraXYZ = glm::vec3( 0.0f, 0.0f, 40.0f );	// 5 units "down" z
+glm::vec3 g_cameraXYZ = glm::vec3( -82.0f, 107.0f, 68.0f );
 glm::vec3 g_cameraTarget_XYZ = glm::vec3( 0.0f, 0.0f, 0.0f );
 
 // TODO include camera new code
@@ -59,7 +64,7 @@ struct sWindowConfig
 public:
 	int height = 480;
 	int width = 640;
-	std::string title = "Graphics 101 is Awesome!";
+	std::string title = "TO BE REPLACED...";
 };
 
 struct sGOparameters		// for the Game Objects' input file
@@ -115,74 +120,65 @@ static void key_callback( GLFWwindow* window, int key, int scancode, int action,
 	//		g_GameObjNumber = 0;
 	//	}
 	//}
-
-	// Change light colour
-	if( key == GLFW_KEY_C && action == GLFW_PRESS )
-	{
-		::g_pLightManager->vecLights[g_LightObjNumber].diffuse.r = getRandInRange<float>( 0.0f, 1.0f );
-		::g_pLightManager->vecLights[g_LightObjNumber].diffuse.g = getRandInRange<float>( 0.0f, 1.0f );
-		::g_pLightManager->vecLights[g_LightObjNumber].diffuse.b = getRandInRange<float>( 0.0f, 1.0f );
-	}
 	
-	// Change light intensity
-	switch ( key )
-	{
-	case GLFW_KEY_COMMA:		// , (< key)
-		::g_pLightManager->vecLights[g_LightObjNumber].attenuation.y *= 0.99f;	// less 1%
-		std::cout << "Linear attenuation of light " << g_LightObjNumber << " is " <<
-			::g_pLightManager->vecLights[g_LightObjNumber].attenuation.y << std::endl;
-		break;
-	case GLFW_KEY_PERIOD:		// . (> key)
-		::g_pLightManager->vecLights[g_LightObjNumber].attenuation.y *= 1.01f; // more 1%
-		std::cout << "Linear attenuation of light " << g_LightObjNumber << " is " <<
-			::g_pLightManager->vecLights[g_LightObjNumber].attenuation.y << std::endl;
-		break;
-	}
+	//// Change light intensity
+	//switch ( key )
+	//{
+	//case GLFW_KEY_COMMA:		// , (< key)
+	//	::g_pLightManager->vecLights[g_LightObjNumber].attenuation.y *= 0.99f;	// less 1%
+	//	std::cout << "Linear attenuation of light " << g_LightObjNumber << " is " <<
+	//		::g_pLightManager->vecLights[g_LightObjNumber].attenuation.y << std::endl;
+	//	break;
+	//case GLFW_KEY_PERIOD:		// . (> key)
+	//	::g_pLightManager->vecLights[g_LightObjNumber].attenuation.y *= 1.01f; // more 1%
+	//	std::cout << "Linear attenuation of light " << g_LightObjNumber << " is " <<
+	//		::g_pLightManager->vecLights[g_LightObjNumber].attenuation.y << std::endl;
+	//	break;
+	//}
 	
-	// Turn Light on/off
-	if ( key == GLFW_KEY_BACKSPACE && action == GLFW_PRESS )
-	{	
-		if ( ::g_pLightManager->vecLights[g_LightObjNumber].diffuse != glm::vec3( 0.0f, 0.0f, 0.0f ) )
-		{	// Turn light ON (Black)
-			::g_pLightManager->vecLights[g_LightObjNumber].diffuse = glm::vec3( 0.0f, 0.0f, 0.0f );
-		}
-		else
-		{	// Turn light ON (White)
-			::g_pLightManager->vecLights[g_LightObjNumber].diffuse = glm::vec3( 1.0f, 1.0f, 1.0f );
-		}
-	}
+	//// Turn Light on/off
+	//if ( key == GLFW_KEY_BACKSPACE && action == GLFW_PRESS )
+	//{	
+	//	if ( ::g_pLightManager->vecLights[g_LightObjNumber].diffuse != glm::vec3( 0.0f, 0.0f, 0.0f ) )
+	//	{	// Turn light ON (Black)
+	//		::g_pLightManager->vecLights[g_LightObjNumber].diffuse = glm::vec3( 0.0f, 0.0f, 0.0f );
+	//	}
+	//	else
+	//	{	// Turn light ON (White)
+	//		::g_pLightManager->vecLights[g_LightObjNumber].diffuse = glm::vec3( 1.0f, 1.0f, 1.0f );
+	//	}
+	//}
 
-	// Change Camera Velocity
-	switch( key )
-	{
-	case GLFW_KEY_UP:		// Up arrow
-		//::g_vecGameObjects[g_GameObjNumber]->position.y += 0.10f;
-		::g_pLightManager->vecLights[g_LightObjNumber].position.y += 0.10f;
-		break;
-	case GLFW_KEY_DOWN:		// Down arrow
-		//::g_vecGameObjects[g_GameObjNumber]->position.y -= 0.10f;
-		::g_pLightManager->vecLights[g_LightObjNumber].position.y -= 0.10f;
-		break;
-	case GLFW_KEY_LEFT:		// Left arrow
-		//::g_vecGameObjects[g_GameObjNumber]->position.x -= 0.10f;
-		::g_pLightManager->vecLights[g_LightObjNumber].position.x -= 0.10f;
-		break;
-	case GLFW_KEY_RIGHT:	// Right arrow
-		//::g_vecGameObjects[g_GameObjNumber]->position.x += 0.10f;
-		::g_pLightManager->vecLights[g_LightObjNumber].position.x += 0.10f;
-		break;
-	case GLFW_KEY_LEFT_BRACKET:		// [{ key
-		//::g_vecGameObjects[g_GameObjNumber]->position.z += 0.10f;
-		::g_pLightManager->vecLights[g_LightObjNumber].position.z += 0.10f;
-		break;
-	case GLFW_KEY_RIGHT_BRACKET:		// ]} key
-		//::g_vecGameObjects[g_GameObjNumber]->position.z -= 0.10f;
-		::g_pLightManager->vecLights[g_LightObjNumber].position.z -= 0.10f;
-		break;
-	}
+	//switch( key )
+	//{
+	//case GLFW_KEY_UP:		// Up arrow
+	//	//::g_vecGameObjects[g_GameObjNumber]->position.y += 0.10f;
+	//	::g_pLightManager->vecLights[g_LightObjNumber].position.y += 0.10f;
+	//	break;
+	//case GLFW_KEY_DOWN:		// Down arrow
+	//	//::g_vecGameObjects[g_GameObjNumber]->position.y -= 0.10f;
+	//	::g_pLightManager->vecLights[g_LightObjNumber].position.y -= 0.10f;
+	//	break;
+	//case GLFW_KEY_LEFT:		// Left arrow
+	//	//::g_vecGameObjects[g_GameObjNumber]->position.x -= 0.10f;
+	//	::g_pLightManager->vecLights[g_LightObjNumber].position.x -= 0.10f;
+	//	break;
+	//case GLFW_KEY_RIGHT:	// Right arrow
+	//	//::g_vecGameObjects[g_GameObjNumber]->position.x += 0.10f;
+	//	::g_pLightManager->vecLights[g_LightObjNumber].position.x += 0.10f;
+	//	break;
+	//case GLFW_KEY_LEFT_BRACKET:		// [{ key
+	//	//::g_vecGameObjects[g_GameObjNumber]->position.z += 0.10f;
+	//	::g_pLightManager->vecLights[g_LightObjNumber].position.z += 0.10f;
+	//	break;
+	//case GLFW_KEY_RIGHT_BRACKET:		// ]} key
+	//	//::g_vecGameObjects[g_GameObjNumber]->position.z -= 0.10f;
+	//	::g_pLightManager->vecLights[g_LightObjNumber].position.z -= 0.10f;
+	//	break;
+	//}
 
 	// Change Camera Position
-	const float CAMERAMOVEMENT = 0.1f;
+	const float CAMERAMOVEMENT = 1.0f;
 	switch( key )
 	{
 	case GLFW_KEY_A:		// Left
@@ -205,68 +201,152 @@ static void key_callback( GLFWwindow* window, int key, int scancode, int action,
 		break;
 	}
 
-	// Change camera Acceleration
-	switch( key )
-	{
-	case GLFW_KEY_J:		// Left
-		CAMERASPEED.x -= 0.00001f;
-		break;
-	case GLFW_KEY_L:		// Right
-		CAMERASPEED.x += 0.00001f;
-		break;
-	case GLFW_KEY_I:		// Forward (along z)
-		CAMERASPEED.z += 0.00001f;
-		break;
-	case GLFW_KEY_K:		// Backwards (along z)
-		CAMERASPEED.z -= 0.00001f;
-		break;
-	case GLFW_KEY_U:		// "Down" (along y axis)
-		CAMERASPEED.y -= 0.00001f;
-		break;
-	case GLFW_KEY_O:		// "Up" (along y axis)
-		CAMERASPEED.y += 0.00001f;
-		break;
-	}
+	//// Change camera Acceleration
+	//switch( key )
+	//{
+	//case GLFW_KEY_J:		// Left
+	//	CAMERASPEED.x -= 0.001f;
+	//	break;
+	//case GLFW_KEY_L:		// Right
+	//	CAMERASPEED.x += 0.001f;
+	//	break;
+	//case GLFW_KEY_I:		// Forward (along z)
+	//	CAMERASPEED.z += 0.001f;
+	//	break;
+	//case GLFW_KEY_K:		// Backwards (along z)
+	//	CAMERASPEED.z -= 0.001f;
+	//	break;
+	//case GLFW_KEY_U:		// "Down" (along y axis)
+	//	CAMERASPEED.y -= 0.001f;
+	//	break;
+	//case GLFW_KEY_O:		// "Up" (along y axis)
+	//	CAMERASPEED.y += 0.001f;
+	//	break;
+	//}
 
-	// Stop Camera
+
 	if( key == GLFW_KEY_P && action == GLFW_PRESS )
-	{
-		CAMERASPEED = glm::vec3( 0.0f, 0.0f, 0.0f );
+	{	
+		bool newTarget = false;
+		int newTargetPos = ::g_targetShip;
+		while( !newTarget )
+		{	
+			newTargetPos++;
+			if( newTargetPos >= ::g_vecGameObjects.size() ) newTargetPos = 0;
+			if( ::g_vecGameObjects[newTargetPos]->meshName == "viper" ||
+				::g_vecGameObjects[newTargetPos]->meshName == "raider" )
+			{
+				::g_targetShip = newTargetPos;
+				newTarget = true;
+			}
+		}
+		::g_cameraTarget_XYZ = glm::vec3( ::g_vecGameObjects[::g_targetShip]->position.x,
+										::g_vecGameObjects[::g_targetShip]->position.y,
+										::g_vecGameObjects[::g_targetShip]->position.z );
 	}
 
-	// Change Selected Light
+	if( key == GLFW_KEY_C && action == GLFW_PRESS )
+	{
+		if( !::g_lookAtON )
+		{
+			//::g_cameraXYZ = glm::vec3( 0.0f, 17.0f, 30.0f );
+			::g_cameraXYZ = glm::vec3( 0.0f, 8.0f, 23.0f );
+			g_lookAtON = true;
+		}
+		else
+		{
+			::g_cameraTarget_XYZ = glm::vec3( 0.0f, 0.0f, 0.0f );
+			::g_cameraXYZ = glm::vec3( -82.0f, 107.0f, 68.0f );
+			::g_lookAtON = false;
+		}
+		
+	}
+
+	if( key == GLFW_KEY_SPACE && action == GLFW_PRESS )
+	{
+		if( ::g_moveRiders == false ) ::g_moveRiders = true;
+		else ::g_moveRiders = false;
+
+		for( int i = 0; i != ::g_vecGameObjects.size(); i++ )
+		{
+			if( ::g_vecGameObjects[i]->meshName == "raider" )
+			{
+				if( ::g_moveRiders == true )
+					::g_vecGameObjects[i]->vel = glm::vec3( 0.0f, 0.0f, 3.0f );
+				else
+					::g_vecGameObjects[i]->vel = glm::vec3( 0.0f, 0.0f, 0.0f );
+					
+			}
+		}
+	}
+
+	if( key == GLFW_KEY_V && action == GLFW_PRESS )
+	{
+		bool newTarget = false;
+		int newTargetPos = ::g_selectedShip;
+		while( !newTarget )
+		{
+			newTargetPos++;
+			if( newTargetPos >= ::g_vecGameObjects.size() ) newTargetPos = 0;
+			if( ::g_vecGameObjects[newTargetPos]->meshName == "viper" )
+			{
+				::g_selectedShip = newTargetPos;
+				newTarget = true;
+			}
+		}
+		::g_vecGameObjects[::g_selectedShip]->position = glm::vec3( -14.0f, -0.1f, 80.0f );
+		::g_vecGameObjects[::g_selectedShip]->vel = glm::vec3( 0.0f, 0.0f, -2.0f );
+
+		::g_cameraTarget_XYZ = glm::vec3( -13.7f, 0.5f, 0.0f );
+
+		::g_vecGameObjects[::g_selectedShip]->isMoving = true;
+
+		::g_movingViper = true;
+	}
+
+	// Change Camera
 	switch ( key )
 	{
 	case GLFW_KEY_1:
-		g_LightObjNumber = 0; 
+		//g_LightObjNumber = 0;
+		::g_cameraXYZ = glm::vec3( -82.0f, 107.0f, 68.0f );
 		break;
 	case GLFW_KEY_2:
-		g_LightObjNumber = 1;
+		//g_LightObjNumber = 1;
+		::g_cameraXYZ = glm::vec3( -100.0f, 65.0f, 115.0f );
 		break;
 	case GLFW_KEY_3:
-		g_LightObjNumber = 2;
+		::g_cameraXYZ = glm::vec3( -23.0f, 12.0f, 131.0f );
 		break;
 	case GLFW_KEY_4:
-		g_LightObjNumber = 3;
+		::g_cameraXYZ = glm::vec3( -14.0f, 0.0f, 68.0f );
 		break;
 	case GLFW_KEY_5:
-		g_LightObjNumber = 4;
+		::g_cameraXYZ = glm::vec3( 14.0f, 0.0f, 68.0f );
 		break;
 	case GLFW_KEY_6:
-		g_LightObjNumber = 5;
 		break;
 	case GLFW_KEY_7:
-		g_LightObjNumber = 6;
 		break;
 	case GLFW_KEY_8:
-		g_LightObjNumber = 7;
 		break;
 	case GLFW_KEY_9:
-		g_LightObjNumber = 8;
 		break;
 	}
 
 	return;
+}
+
+void UpdateCameraPosition( void )
+{
+	for( int i = 0; i != ::g_vecGameObjects.size(); i++ )
+	{
+		if( ::g_vecGameObjects[i]->isMoving == true )
+		{
+			::g_cameraXYZ = ::g_vecGameObjects[i]->position;
+			::g_cameraXYZ.y += 0.1f;
+		}
+	}
 }
 
 int main( void )
@@ -368,41 +448,43 @@ int main( void )
 	::g_pLightManager->LoadShaderUniformLocations( currentProgID );
 
 	// Change ZERO (the SUN) light position
-	::g_pLightManager->vecLights[0].position = glm::vec3( 0.0f, 0.0f, 0.0f );
+	::g_pLightManager->vecLights[0].position = glm::vec3( -500.0f, 500.0f, 500.0f );
 	::g_pLightManager->vecLights[0].diffuse = glm::vec3( 1.0f, 1.0f, 1.0f );
 	::g_pLightManager->vecLights[0].ambient = glm::vec3( 0.8f, 0.8f, 0.8f );
-	::g_pLightManager->vecLights[0].attenuation.y = 0.6f;		// Change the linear attenuation
+	::g_pLightManager->vecLights[0].attenuation.y = 0.002f;		// Change the linear attenuation
 
 	// ADD 8 MORE LIGHTS========================================
 	{
+		// ENGINE LIGHTS
+		::g_pLightManager->vecLights[1].position = glm::vec3( -6.5f, 4.5f, 78.0f );
+		::g_pLightManager->vecLights[2].position = glm::vec3( 6.5f,  4.5f, 78.0f );
+		::g_pLightManager->vecLights[3].position = glm::vec3( -5.5f, -2.8f, 75.0f );
+		::g_pLightManager->vecLights[4].position = glm::vec3( 5.5f,  -2.8f, 75.0f );
+		::g_pLightManager->vecLights[1].diffuse = glm::vec3( 0.5f, 0.5f, 1.0f );
+		::g_pLightManager->vecLights[2].diffuse = glm::vec3( 0.5f, 0.5f, 1.0f );
+		::g_pLightManager->vecLights[3].diffuse = glm::vec3( 0.5f, 0.5f, 1.0f );
+		::g_pLightManager->vecLights[4].diffuse = glm::vec3( 0.5f, 0.5f, 1.0f );
+		::g_pLightManager->vecLights[1].attenuation.y = 0.45;
+		::g_pLightManager->vecLights[2].attenuation.y = 0.45;
+		::g_pLightManager->vecLights[3].attenuation.y = 0.45;
+		::g_pLightManager->vecLights[4].attenuation.y = 0.45;
 		
-		::g_pLightManager->vecLights[1].position = glm::vec3( -8.0f, 8.0f, 8.0f );
-		::g_pLightManager->vecLights[1].diffuse = glm::vec3( 1.0f, 1.0f, 1.0f );
-
-		::g_pLightManager->vecLights[2].position = glm::vec3( -8.0f, 8.0f, -8.0f );
-		::g_pLightManager->vecLights[2].diffuse = glm::vec3( 1.0f, 1.0f, 1.0f );
-
-		::g_pLightManager->vecLights[3].position = glm::vec3( 8.0f, 8.0f, -8.0f );
-		::g_pLightManager->vecLights[3].diffuse = glm::vec3( 1.0f, 1.0f, 1.0f );
-
-		::g_pLightManager->vecLights[4].position = glm::vec3( 8.0f, 8.0f, 8.0f );
-		::g_pLightManager->vecLights[4].diffuse = glm::vec3( 1.0f, 1.0f, 1.0f );
-
-		::g_pLightManager->vecLights[5].position = glm::vec3( -8.0f, -8.0f, 8.0f );
+		// LANDING BAY LEFT
+		::g_pLightManager->vecLights[5].position = glm::vec3( -13.7f, 0.5f, 23.0f );
+		::g_pLightManager->vecLights[6].position = glm::vec3( -13.7f, 0.5f, 47.0f );
 		::g_pLightManager->vecLights[5].diffuse = glm::vec3( 1.0f, 1.0f, 1.0f );
-
-		::g_pLightManager->vecLights[6].position = glm::vec3( -8.0f, -8.0f, -8.0f );
 		::g_pLightManager->vecLights[6].diffuse = glm::vec3( 1.0f, 1.0f, 1.0f );
 
-		::g_pLightManager->vecLights[7].position = glm::vec3( 8.0f, -8.0f, -8.0f );
+		// LANDING BAY RIGHT
+		::g_pLightManager->vecLights[7].position = glm::vec3( 13.7f, 0.5f, 23.0f );
+		::g_pLightManager->vecLights[8].position = glm::vec3( 13.7f, 0.5f, 47.0f );
 		::g_pLightManager->vecLights[7].diffuse = glm::vec3( 1.0f, 1.0f, 1.0f );
-
-		::g_pLightManager->vecLights[8].position = glm::vec3( 8.0f, -8.0f, 8.0f );
 		::g_pLightManager->vecLights[8].diffuse = glm::vec3( 1.0f, 1.0f, 1.0f );
+
 	}
 	//=========================================================
 
-	loadLightObjects();
+	//loadLightObjects();
 
 	glEnable( GL_DEPTH );
 
@@ -459,7 +541,7 @@ int main( void )
 			// There IS something to draw
 			m = glm::mat4x4( 1.0f );	//		mat4x4_identity(m);
 
-			::g_vecGameObjects[index]->orientation.z += ( ::g_vecGameObjects[index]->vel.z ) / 30;
+			//::g_vecGameObjects[index]->orientation.z += ( ::g_vecGameObjects[index]->vel.z ) / 30;
 			//::g_vecGameObjects[index]->orientation.y += ( ::g_vecGameObjects[index]->vel.y ) / 10;
 			//::g_vecGameObjects[index]->orientation.x += ( ::g_vecGameObjects[index]->vel.x ) / 10;
 
@@ -505,7 +587,9 @@ int main( void )
 			m = m * matPostRotX;
 			// TODO: add the other rotation matrix (i.e. duplicate code above)
 
-			float finalScale = VAODrawInfo.scaleForUnitBBox * ::g_vecGameObjects[index]->scale;
+			//float finalScale = VAODrawInfo.scaleForUnitBBox * ::g_vecGameObjects[index]->scale;
+			//finalScale = finalScale * ::g_vecGameObjects[index]->scale;
+			float finalScale = ::g_vecGameObjects[index]->scale;
 
 			glm::mat4 matScale = glm::mat4x4( 1.0f );
 			matScale = glm::scale( matScale,
@@ -522,12 +606,18 @@ int main( void )
 
 			// Set Camera Speed according to the user input
 			//g_cameraXYZ.z -= 0.0001f;
-			g_cameraXYZ.x += CAMERASPEED.x;
-			g_cameraXYZ.z += CAMERASPEED.y;
-			g_cameraXYZ.y += CAMERASPEED.z;
+			//g_cameraXYZ.x += CAMERASPEED.x;
+			//g_cameraXYZ.z += CAMERASPEED.y;
+			//g_cameraXYZ.y += CAMERASPEED.z;
 
 			// View or "camera" matrix
 			glm::mat4 v = glm::mat4( 1.0f );	// identity
+
+			if( ::g_movingViper = true )
+			{
+				UpdateCameraPosition();
+			}
+
 
 			v = glm::lookAt( g_cameraXYZ,			// "eye" or "camera" position
 				g_cameraTarget_XYZ,					// "At" or "target"							 
@@ -582,7 +672,13 @@ int main( void )
 		ssTitle << "Camera (xyz): "
 			<< g_cameraXYZ.x << ", "
 			<< g_cameraXYZ.y << ", "
-			<< g_cameraXYZ.z;
+			<< g_cameraXYZ.z << " - "
+			<< "Selected Light: " << g_LightObjNumber
+			<< " light position (xyz): "
+			<< ::g_pLightManager->vecLights[g_LightObjNumber].position.x << ", "
+			<< ::g_pLightManager->vecLights[g_LightObjNumber].position.y << ", "
+			<< ::g_pLightManager->vecLights[g_LightObjNumber].position.z;
+
 		glfwSetWindowTitle( window, ssTitle.str().c_str() );
 
 		glfwSwapBuffers( window );
@@ -706,11 +802,24 @@ void loadObjectsFile( std::string fileName )
 			pTempGO->meshName = allObjects[index].meshname; // Set the name of the mesh
 			if ( allObjects[index].random == "true" )
 			{   // position and the scale should be random
-				pTempGO->position.x = generateRandomNumber( -allObjects[index].rangeX, allObjects[index].rangeX );
-				pTempGO->position.y = generateRandomNumber( -allObjects[index].rangeY, allObjects[index].rangeY );
-				pTempGO->position.z = generateRandomNumber( -allObjects[index].rangeZ, allObjects[index].rangeZ );
-				pTempGO->scale = generateRandomNumber( 0.0f, allObjects[index].rangeScale );
-
+				if( allObjects[index].meshname == "viper" )
+				{
+					float random = generateRandomNumber( 0.0f, 1.0f );
+					if ( random <= 0.5f ) 
+						pTempGO->position.x = generateRandomNumber( -25.0f, -17.0f );
+					else 
+						pTempGO->position.x = generateRandomNumber( 17.0f, 25.0f );
+					
+					pTempGO->position.y = generateRandomNumber( 0.0f, 17.0f );
+					pTempGO->position.z = generateRandomNumber( -10.0f, 30.0f );
+				}
+				else
+				{
+					pTempGO->position.x = generateRandomNumber( -allObjects[index].rangeX, allObjects[index].rangeX );
+					pTempGO->position.y = generateRandomNumber( -allObjects[index].rangeY, allObjects[index].rangeY );
+					pTempGO->position.z = generateRandomNumber( -allObjects[index].rangeZ, allObjects[index].rangeZ );
+				}
+				pTempGO->scale = allObjects[index].rangeScale;
 			}
 			else
 			{   // position and scale are fixed
@@ -719,55 +828,22 @@ void loadObjectsFile( std::string fileName )
 				pTempGO->position.z = allObjects[index].z;
 				pTempGO->scale = allObjects[index].scale;
 			}
-
-			// HACK set color for each model
-			// TODO add color to the config file
-			if ( allObjects[index].meshname == "bacteria1" )
-			{
-				pTempGO->diffuseColour = glm::vec4( 0.9f, 0.9f, 0.2f, 1.0f );
-			}
-			else if ( allObjects[index].meshname == "bacteria2" )
-			{
-				pTempGO->diffuseColour = glm::vec4( 0.3f, 1.0f, 1.0f, 1.0f );
-			}
-			else if ( allObjects[index].meshname == "virus" )
-			{
-				pTempGO->diffuseColour = glm::vec4( 0.1f, 0.9f, 0.1f, 1.0f );
-			}
-			else if ( allObjects[index].meshname == "bloodcell" ) {
-				pTempGO->diffuseColour = glm::vec4( 1.0f, 0.0f, 0.0f, 1.0f );
-			}
-			else if ( allObjects[index].meshname == "asteroid1" ) {
-				pTempGO->diffuseColour = glm::vec4( 0.5f, 0.5f, 0.45f, 1.0f );
-			}
-			else if ( allObjects[index].meshname == "asteroid2" ) {
-				pTempGO->diffuseColour = glm::vec4( 0.45f, 0.45f, 0.5f, 1.0f );
-			}
-			else if ( allObjects[index].meshname == "asteroid3" ) {
-				pTempGO->diffuseColour = glm::vec4( 0.55f, 0.6f, 0.6f, 1.0f );
-			}
-			else if ( allObjects[index].meshname == "asteroid4" ) {
-				pTempGO->diffuseColour = glm::vec4( 0.7f, 0.65f, 0.7f, 1.0f );
-			}
-			else
-			{
-				pTempGO->diffuseColour = glm::vec4( 1.0f, 1.0f, 1.0f, 1.0f );
-			}
-
+				
+			pTempGO->diffuseColour = glm::vec4( 0.5f, 0.5f, 0.5f, 1.0f );
+	
 			// ADD velocity and acceleration
 
 			if ( !pTempGO->bIsLight )
 			{
 				// Use 0.1 as base velocity for x, y and z.
-				pTempGO->vel.x = 0.1f;
-				pTempGO->vel.y = 0.1f;
-				pTempGO->vel.z = 0.1f;
+				//pTempGO->vel.x = 0.1f;
+				//pTempGO->vel.y = 0.1f;
+				//pTempGO->vel.z = 0.1f;
+				pTempGO->vel = glm::vec3( 0.0f );
 			}
 
-			// This rotation is around it's own axis
-			pTempGO->rotation.x = generateRandomNumber( -0.05f, 0.05f );
-			pTempGO->rotation.y = generateRandomNumber( -0.05f, 0.05f );
-			pTempGO->rotation.z = generateRandomNumber( -0.05f, 0.05f );
+			// NO ROTATION
+			pTempGO->rotation = glm::vec3( 0.0f );
 
 			::g_vecGameObjects.push_back( pTempGO );
 		}
@@ -790,7 +866,7 @@ sGOparameters parseObjLine( std::ifstream &source ) {
 	return sGOpar;
 }
 
-//Load objects.txt
+//Load meshlist.txt
 void loadMeshesFile( std::string fileName, GLint ShaderID )
 {
 	std::vector <sMeshparameters> allMeshes;
@@ -891,85 +967,30 @@ void PhysicsStep( double deltaTime )
 			continue;		// Skip everything else in the for
 		}
 
-		//// Explicity Euler integration (RK4)
-		//// New position is based on velocity over time
-		//glm::vec3 deltaPosition = ( float )deltaTime * pCurGO->vel;
-		//pCurGO->position += deltaPosition;
+		// Explicity Euler integration (RK4)
+		// New position is based on velocity over time
+		glm::vec3 deltaPosition = ( float )deltaTime * pCurGO->vel;
+		pCurGO->position += deltaPosition;
+
+		if( pCurGO->meshName == "viper" )
+		{
+			if( pCurGO->isMoving == true )
+			{
+				if( pCurGO->position.z <= 23.0f )
+				{
+					pCurGO->position.z = 23.0f;
+					pCurGO->vel = glm::vec3( 0.0f );
+					pCurGO->isMoving = false;
+					::g_movingViper = false;
+				}
+			}
+		}
 
 		//// New velocity is based on acceleration over time
 		//glm::vec3 deltaVelocity = ( ( float )deltaTime * pCurGO->accel )
 		//	+ ( ( float )deltaTime * GRAVITY );
 
-		//pCurGO->vel += deltaVelocity;
-
-		// HACK: Collision step
-		switch ( pCurGO->typeOfObject )
-		{
-		case eTypeOfObject::SPHERE:
-			//	// Comare this to EVERY OTHER object in the scene
-			for ( int indexEO = 0; indexEO != ::g_vecGameObjects.size(); indexEO++ )
-			{
-				// Don't test for myself
-				if ( index == indexEO )
-					continue;		// It's me!!
-
-				cGameObject* pOtherObject = ::g_vecGameObjects[indexEO];
-				// Is another object
-				switch ( pOtherObject->typeOfObject )
-				{
-				case eTypeOfObject::SPHERE:
-					//
-					if ( PenetrationTestSphereSphere( pCurGO, pOtherObject ) )
-					{
-						////std::cout << "Collision!" << std::endl;
-						//pCurGO->diffuseColour = glm::vec4( 1.0f, 0.0f, 0.0f, 1.0f );
-						//pOtherObject->diffuseColour = glm::vec4( 1.0f, 0.0f, 0.0f, 1.0f );
-					}
-
-					break;
-				}
-			}
-
-			//		switch ( pGO_to_Compare->typeOfObject )
-			//		{
-			//		case eTypeOfObject::SPHERE:
-			//			CalcSphereSphereColision( pCurGO, pGO_to_Compare );
-			//			break;
-			//		case eTypeOfObject::PLANE:
-			//			CalcSpherePlaneColision( pCurGO, pGO_to_Compare );
-			//			break;
-			//		// More if I'd like that.
-			//
-			//		}
-			//	}
-
-			// HACK
-			//const float SURFACEOFGROUND = -2.0f;
-			//const float RIGHTSIDEWALL = 5.0f;
-			//const float LEFTSIDEWALL = -5.0f;
-			// 
-			// Sphere-Plane detection
-
-			//if ( ( pCurGO->position.y - pCurGO->radius ) <= SURFACEOFGROUND )
-			//{	// Object has "hit" the ground
-			//	//pCurGO->diffuseColour = glm::vec4( 0.0f, 1.0f, 0.0f, 1.0f );
-			//	pCurGO->vel.y = +( fabs( pCurGO->vel.y ) );
-			//}
-
-			//if ( ( pCurGO->position.x + pCurGO->radius ) >= RIGHTSIDEWALL )
-			//{	// Object too far to the right
-			//	// Object has penetrated the right plane
-			//	//pCurGO->diffuseColour = glm::vec4( 0.0f, 1.0f, 0.0f, 1.0f );
-			//	pCurGO->vel.x = -( fabs( pCurGO->vel.x ) );
-			//}
-			//if ( ( pCurGO->position.x - pCurGO->radius ) <= LEFTSIDEWALL )
-			//{	// Object too far to the left
-			//	// Object has penetrated the left plane
-			//	//pCurGO->diffuseColour = glm::vec4( 0.0f, 1.0f, 0.0f, 1.0f );
-			//	pCurGO->vel.x = +( fabs( pCurGO->vel.x ) );
-			//}
-			break;
-		};
+		//break;
 
 	}//for ( int index...
 

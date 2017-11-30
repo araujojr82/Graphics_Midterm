@@ -50,11 +50,12 @@ bool LoadPlyFileIntoMesh( std::string filename, cMesh &theMesh )
 	{
 		//end_header
 		//-0.0312216 0.126304 0.00514924 0.850855 0.5 		
-		float x, y, z, confidence, intensity;
+		float x, y, z, nx, ny, nz, confidence, intensity;
 
 		plyFile >> x;
 		plyFile >> y;
 		plyFile >> z;
+		plyFile >> nx >> ny >> nz;
 //		plyFile >> confidence;
 //		plyFile >> intensity;
 
@@ -64,6 +65,9 @@ bool LoadPlyFileIntoMesh( std::string filename, cMesh &theMesh )
 		theMesh.pVertices[index].r = 1.0f;	// vertices[index].g = 1.0f;
 		theMesh.pVertices[index].g = 1.0f;	// vertices[index].b = 1.0f;
 		theMesh.pVertices[index].b = 1.0f;	// vertices[index].r = 1.0f;
+		theMesh.pVertices[index].nx = nx;	// vertices[index].g = 1.0f;
+		theMesh.pVertices[index].ny = ny;	// vertices[index].b = 1.0f;
+		theMesh.pVertices[index].nz = nz;	// vertices[index].r = 1.0f;
 	}
 
 	// Load the triangle (or face) information, too
@@ -77,7 +81,7 @@ bool LoadPlyFileIntoMesh( std::string filename, cMesh &theMesh )
 		plyFile >> theMesh.pTriangles[count].vertex_ID_2;	// 98
 	}
 
-	theMesh.CalculateNormals();
+//	theMesh.CalculateNormals();
 
 	return true;
 }

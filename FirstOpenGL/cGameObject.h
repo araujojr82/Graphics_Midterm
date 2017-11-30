@@ -40,6 +40,7 @@ public:
 	// **********************************
 	// Lightn
 	bool bIsLight;		// is this object a light representation?
+	bool isMoving;
 	int myLight;		// which light is this?
 
 	glm::vec4 diffuseColour;	//  The actual color when lights hit it

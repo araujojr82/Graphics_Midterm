@@ -21,6 +21,8 @@ cGameObject::cGameObject()
 	this->bIsLight = false;
 	this->myLight = NULL;
 
+	this->isMoving = false;
+
 	return;
 }
 
