@@ -1,0 +1,3 @@
+battlestar ../models/Battlestar_Galactica_ASCII_Res_6_26674_faces.ply_x
+viper      ../models/Viper_MkVII_ASCII_UVTex.ply_x
+raider     ../models/Raider_ASCII_UVtex.ply_x

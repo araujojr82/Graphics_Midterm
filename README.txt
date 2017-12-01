@@ -2,28 +2,23 @@ Graphics Midterm
 
 Author: Euclides Araujo
 
+PLEASE DON'T CHANGE THE VIPER AND RIDER MODELS!!
+Feel free to change the Battlestar Galactica model as you wish.
+
 User input keys:
-[CAMERA CONTROL]
-1-5: Select fixed cameras in the scene;
+Numbers 1-5: Select fixed cameras in the scene;
+C Key: Change the camera over the “bridge” of the Galactica. (QUESTION 03)
+P Key: Change the target of the "bridge" camera. (QUESTION 03)
+SPACE: Start/Stop Moving the Raiders towards the Galactica. (QUESTION 04)
+V Key: Place the Vipers (on each time) behind the left landing bay. (QUESTION 05)
+ENTER: Hold to move the chosen Viper to the landing pod until its final position. (QUESTION 05)
 
-C Key: Change the colour for the selected light;
-Arrow Keys: Move the light in X, Y;
-[ and ] Keys: Move the light in Z;
-,(<): decrease the linear attenuation for selected light;
-.(>): increase the linear attenuation for selected light;
-
-[CAMERA CONTROL]
-Enter: Turn the wireframe mode on/off;
 W,A,S,D,Q,E: Controls the camera position;
-I,J,K,L,U,O: Controls the acceleration of the camera;
-P: Stop all acceleration
 
 
 Config is divided in 3 files, the config.txt has the interface options, 
 while the meshlist.txt. and objects.txt holds the meshes and objects, 
 both uses spaces to separate the properties.
-
-
 
 meshlist.txt is composed of 1 mesh per line, and the line structure is:
 meshname  name_of_the_mesh_file1.ply
@@ -31,9 +26,6 @@ meshname  name_of_the_mesh_file1.ply
 example:
 virus1    virus_super_low_res_XYZ.ply
 asteroid1 asteroid_xyz.ply
-
-
-
 
 objects.txt is composed of lines for each meshtipe, 
 each line can create 1 or more objects in the game, the line structure is:
