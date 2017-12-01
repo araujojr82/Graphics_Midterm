@@ -36,8 +36,8 @@ bool LoadPlyFileIntoMesh( std::string filename, cMesh &theMesh )
 	plyFile >> theMesh.numberOfVertices;
 
 	ReadFileToToken( plyFile, "face" );
-//	int numTriangles = 0;
-	plyFile >> theMesh.numberOfTriangles;		
+	//	int numTriangles = 0;
+	plyFile >> theMesh.numberOfTriangles;
 
 	ReadFileToToken( plyFile, "end_header" );
 

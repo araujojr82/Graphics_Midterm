@@ -3,9 +3,9 @@ Graphics Midterm
 Author: Euclides Araujo
 
 User input keys:
-[LIGHT CONTROL]
-1-9: Select lights in the scene;
-Backspace: Turn the selected light on/off;
+[CAMERA CONTROL]
+1-5: Select fixed cameras in the scene;
+
 C Key: Change the colour for the selected light;
 Arrow Keys: Move the light in X, Y;
 [ and ] Keys: Move the light in Z;
